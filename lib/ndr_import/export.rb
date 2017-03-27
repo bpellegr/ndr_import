@@ -3,6 +3,12 @@
 
 module NdrImport
   # This class manages the export of data
+  # a = NdrImport::Export.new(relation: Comment, columns: ['who', 'created_at'])
+  # a.to_csv
+  # OR
+  # mapping2 = YAML.load_file(SafePath.new('mappings_config').join(mapping_file_v2))
+  # t2 = NdrImport::Export.new(mapping: mapping2)
+  # t2.to_csv
   #
   class Export
 
@@ -17,6 +23,7 @@ module NdrImport
       %w(relation mapping header_lines footer_lines format filename columns)
     end
 
+    attr_reader(*all_valid_options)
     # Must have a relation OR mapping (mapping defines relation ??)
     # all other params optional
     def initialize(options = {})
@@ -34,8 +41,8 @@ module NdrImport
       end
       if !@mapping.nil?
         # this is probably wrong - relation should be a join of tables - where i assumed could be 'a'
-        instance_variable_set("@relation", @mapping.klass.constantize)
-        instance_variable_set("@columns", @mapping.columns)
+        instance_variable_set("@relation", @mapping.first.klass.constantize)
+        instance_variable_set("@columns", @mapping.first.columns)
       end
     end
 
